@@ -2,44 +2,55 @@ import java.lang.reflect.Array;
 import java.util.*;
 
 public class Formula1ChampionshipManager implements ChampionshipManager{
-    static Scanner sc = new Scanner(System.in);
     ArrayList<Formula1Driver> driversList =  new ArrayList<>();
 
     public void menu(){
         menu:
         while (true){
-            System.out.println("Enter A to add new player");
-            System.out.println("Enter V to view an existing player");
-            System.out.println("Enter Q to Exit");
-            String menuInput = sc.nextLine().toLowerCase();
+            Scanner sc = new Scanner(System.in);
+            System.out.println(
+                    "==========================-Menu-========================= \n" +
+                    " To add a participant (team with a driver) : A \n" +
+                    " To remove a driver and the relative team  : R \n" +
+                    " To change the driver for an existing team : C \n" +
+                    " To display stats of a driver              : v \n" +
+                    " To display the Formula1 driver table      : T \n" +
+                    " To Exit                                   : Q \n" +
+                    "=========================================================");
 
-            switch(menuInput){
-                case "a":
-                    addNewDriver();
-                    break;
-                case "v":
-                    viewDriver();
-                    break;
-                case "q":
-                    break menu;
+            try {
+                System.out.print("Option : ");
+                String menuInput = sc.next();
+
+                switch(menuInput.toLowerCase()){
+                    case "a": addNewDriver();break;
+                    case "r": removeDriver();break;
+//                    case "c": change();break;
+                    case "v": viewDriver();break;
+//                    case "t": tableDisplay();break;
+                    case "q": break menu;
+                }
+            } catch (InputMismatchException x) {
+                System.out.println("Invalid input, try again");
             }
         }
         System.exit(0);
     }
 
     public void addNewDriver(){
+        Scanner sc =  new Scanner(System.in);
         int driverID = 1;
 
         //Drivers Name
-        System.out.println("Enter driver's name: ");
+        System.out.print("Enter driver's name: ");
         String driverName = sc.next();
 
         //Drivers Location
-        System.out.println("Enter driver's location: ");
+        System.out.print("Enter driver's location: ");
         String driverLocation = sc.next();
 
         //Drivers Team
-        System.out.println("Enter driver's team: ");
+        System.out.print("Enter driver's team: ");
         String driverTeam = sc.next();
 
         Car car = new Car(driverTeam);
@@ -66,55 +77,87 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
     }
 
     public void setStatistics(Formula1Driver driver){
-        Scanner input =  new Scanner(System.in);
-        System.out.print("Enter the number of races, the driver has participated in : ");
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter the number of races, the driver has participated in: ");
         int numberOfRaces = input.nextInt();
         driver.setTotalRaces(numberOfRaces);
 
         System.out.print("Press Y to add player statistics\nPress N to go back to menu: ");
-        while(true) {
-            String value = input.nextLine().toLowerCase();
-            if (value.equals("y")) {
-                System.out.print("Enter the place : ");
-                int position = input.nextInt();
-                if (position <= 10){
-                    System.out.print("Enter the number of races in that place : ");
-                    int numberOfPlaces = input.nextInt();
-                    driver.setStatistics(position, numberOfPlaces);
-
-                    System.out.println("Press Y to add more places\nPress N to return to menu");
-                }
-                else{
-                    System.out.println("Only the places between 1 - 10 will be recorded.");
-                }
-            }else if (value.equals("n")){
-                break;
-            }
-            else{
-                System.out.println("Please enter Y or N to continue...");
-            }
+        String option = input.next();
+        if (option.equalsIgnoreCase("y")) {
+            // addPosition method will be running in recursion until something other than y is pressed
+            addPosition(driver, option);
+        }
+        else if(option.equalsIgnoreCase("n")){
+            return;
+        }
+        else{
+            System.out.println("Please enter valid values");
         }
     }
 
-    public void deleteDriver(int driverID){
+    public void addPosition(Formula1Driver driver, String option){
+        Scanner input = new Scanner(System.in);
+        if (option.equalsIgnoreCase("y")){
+            System.out.print("Enter the place : ");
+            int position = input.nextInt();
 
-    }
-    public void changeDriver(int driverID, int teamID) {
+            if (position <= 10) {
+                System.out.print("Enter the number of races in that place : ");
+                int numberOfPlaces = input.nextInt();
+                driver.setStatistics(position, numberOfPlaces);
+            }else {
+                System.out.println("Only the places between 1 - 10 will be recorded");
+            }
 
+            // Go in recursive manner using the driver object and the option given
+            System.out.print("Press Y to add more places\nPress N to return to menu : ");
+            String value = input.next();
+            addPosition(driver, value);
+        }
+        else if(option.equalsIgnoreCase("n")){
+            return;
+        }
+        else{
+            System.out.println("Please enter valid values");
+        }
     }
+
     public void viewDriver(){
-        System.out.println("Enter driver's name to view their details: ");
+        Scanner sc =  new Scanner(System.in);
+        boolean driverFound = false;
+
+        System.out.print("Enter driver's name to view their details: ");
         String driverName = sc.next();
 
         for(Formula1Driver currentDriver: driversList){
             if(currentDriver.getName().equalsIgnoreCase(driverName)){
-                System.out.println("Driver's Name :" + currentDriver.getName());
-                System.out.println("Driver's Location:" + currentDriver.getLocation());
-                System.out.println("Driver's Team:" + currentDriver.getTeam().getCarManufacturer());
-                System.out.println("Total Points the driver has: "+currentDriver.getTotalPoints());
-                System.out.println("Total Races the driver has participated in: "+currentDriver.getTotalRaces());
-                System.out.println(Arrays.toString(currentDriver.getPositionDetails()));
+                driverFound = !driverFound;
+                currentDriver.viewDriverDetails();
+            }}
+        if(!driverFound) {
+            System.out.println("Sorry, No driver found with that name.");
+        }
+    }
+
+    public void removeDriver(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the driver name to be removed: ");
+        String removeDriver = sc.next();
+
+        boolean driverFound = false;
+        int foundDriverIndex = 0;
+        for (Formula1Driver currentDriver : driversList){
+            if (currentDriver.getName().equalsIgnoreCase(removeDriver)){
+                foundDriverIndex = driversList.indexOf(currentDriver);
+                driverFound = !driverFound;
             }
+        }
+        if(driverFound){
+            System.out.println("Driver "+ driversList.get(foundDriverIndex).getName() + " has been successfully deleted");
+            driversList.remove(foundDriverIndex);
+        }else{
+            System.out.println("Sorry, No driver found with that name.");
         }
     }
 }
