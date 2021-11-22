@@ -9,25 +9,26 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         while (true){
             Scanner sc = new Scanner(System.in);
             System.out.println(
-                    "==========================-Menu-========================= \n" +
-                    " To add a participant (team with a driver) : A \n" +
-                    " To remove a driver and the relative team  : R \n" +
-                    " To change the driver for an existing team : C \n" +
-                    " To display stats of a driver              : v \n" +
-                    " To display the Formula1 driver table      : T \n" +
-                    " To Exit                                   : Q \n" +
-                    "=========================================================");
+                    """
+                            ==========================-Menu-=========================\s
+                             To add a participant (team with a driver) : A\s
+                             To remove a driver and the relative team  : R\s
+                             To change the driver for an existing team : C\s
+                             To display stats of a driver              : v\s
+                             To display the Formula1 driver table      : T\s
+                             To Exit                                   : Q\s
+                            =========================================================""");
 
             try {
                 System.out.print("Option : ");
                 String menuInput = sc.next();
 
                 switch(menuInput.toLowerCase()){
-                    case "a": addNewDriver();break;
+                    case "a": addNewDriver(setTeamOfNewDriver());break;
                     case "r": removeDriver();break;
-//                    case "c": change();break;
+                    case "c": changeDriver();break;
                     case "v": viewDriver();break;
-//                    case "t": tableDisplay();break;
+                    case "t": displayAllDrivers();break;
                     case "q": break menu;
                 }
             } catch (InputMismatchException x) {
@@ -37,9 +38,17 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         System.exit(0);
     }
 
-    public void addNewDriver(){
+    public Car setTeamOfNewDriver(){
         Scanner sc =  new Scanner(System.in);
-        int driverID = 1;
+        //Drivers Team
+        System.out.print("Enter driver's team: ");
+        String driverTeam = sc.next();
+
+        return new Car(driverTeam);
+    }
+
+    public void addNewDriver(Car driverTeam){
+        Scanner sc =  new Scanner(System.in);
 
         //Drivers Name
         System.out.print("Enter driver's name: ");
@@ -49,29 +58,24 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         System.out.print("Enter driver's location: ");
         String driverLocation = sc.next();
 
-        //Drivers Team
-        System.out.print("Enter driver's team: ");
-        String driverTeam = sc.next();
-
-        Car car = new Car(driverTeam);
-        Formula1Driver currentDriver = new Formula1Driver(driverID, driverName, driverLocation, car);
+        Formula1Driver currentDriver = new Formula1Driver(driverName, driverLocation, driverTeam);
 
         // Looks for existing drivers with the same team
         boolean teamExists = false;
         for(Driver thisDriver:driversList){
             if (Objects.equals(
                     thisDriver.getTeam().getCarManufacturer(), currentDriver.getTeam().getCarManufacturer()
-                )){
-                    teamExists = true;
-                }
+            )) {
+                teamExists = true;
+                break;
+            }
         }
         if(teamExists){
             System.out.println("Sorry this team is already Registered!");
         }
-        //If drivers with same team doesn't exist add a new driver with a team
+        //If drivers with same team doesn't exist add a new driver with a team will be created
         else{
             driversList.add(currentDriver);
-            driverID++;
             setStatistics(currentDriver);
         }
     }
@@ -157,7 +161,60 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             System.out.println("Driver "+ driversList.get(foundDriverIndex).getName() + " has been successfully deleted");
             driversList.remove(foundDriverIndex);
         }else{
-            System.out.println("Sorry, No driver found with that name.");
+            System.out.println("Sorry, No driver was found with that name.");
         }
+    }
+
+    private void changeDriver() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the team name to be changed: ");
+        String teamName = sc.next();
+
+        boolean teamFound = false;
+        int foundDriverIndex = 0;
+
+        // Looping through drivers list ot find if there is a team with the user input
+        for (Formula1Driver currentDriver : driversList){
+            if (currentDriver.getTeam().getCarManufacturer().equalsIgnoreCase(teamName)){
+                foundDriverIndex = driversList.indexOf(currentDriver);
+                teamFound = !teamFound;
+            }
+        }
+        if(teamFound){
+            Car teamInfo = driversList.get(foundDriverIndex).getTeam();
+
+            //Drivers Name
+            System.out.print("Enter new driver's name: ");
+            String driverName = sc.next();
+
+            //Drivers Location
+            System.out.print("Enter new driver's location: ");
+            String driverLocation = sc.next();
+
+            //Creates a new driver object containing the new driver info
+            Formula1Driver newDriver = new Formula1Driver(driverName, driverLocation, teamInfo);
+
+            driversList.set(foundDriverIndex, newDriver);
+            setStatistics(newDriver);
+
+            System.out.println("Driver for the team "+ teamInfo.getCarManufacturer()
+                    + " has been successfully changed");
+        }else{
+            System.out.println("Sorry, No team was found with that name.");
+        }
+    }
+
+    private void displayAllDrivers(){
+
+        System.out.printf("%12s %12s %17s %10s %10s %10s %10s %10s \n", "Team", "| Driver", "| Location",
+                "| Points", "| Races", "| 1st places", "| 2nd places", "| 3rd places |" );
+
+
+        for(Formula1Driver currentDriver: driversList){
+            String[] details = currentDriver.tableDisplay();
+            System.out.printf("%12s %12s %15s %11s %11s %11s %11s %11s \n", details[0], details[1], details[2],
+                    details[3], details[4], details[5], details[6], details[7]);
+        }
+
     }
 }

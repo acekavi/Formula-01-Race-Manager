@@ -1,12 +1,10 @@
 public abstract class  Driver {
-    private int ID;
     private String name;
     private String location;
     private Car team;
 
     //Constructor that defines the driver
-    public Driver(int ID, String name, String location, Car team) {
-        this.ID = ID;
+    public Driver(String name, String location, Car team) {
         this.name = name;
         this.location = location;
         this.team = team;
@@ -15,14 +13,6 @@ public abstract class  Driver {
     //Default constructor with no values
     public Driver() {
 
-    }
-
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
     }
 
     public String getName() {

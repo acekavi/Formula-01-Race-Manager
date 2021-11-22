@@ -1,12 +1,12 @@
 public class Car {
     private String carManufacturer;
     private String carType;
-    private int carNumber;
+    private int teamRaces;
 
-    public Car(String carManufacturer, String carType, int carNumber) {
+    public Car(String carManufacturer, String carType, int teamRaces) {
         this.carManufacturer = carManufacturer;
         this.carType = carType;
-        this.carNumber = carNumber;
+        this.teamRaces = teamRaces;
     }
 
     public Car(String carManufacturer) {
