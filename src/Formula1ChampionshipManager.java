@@ -178,22 +178,30 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
+    //Introduced this method to reduce code duplication in removing and adding drivers to a new race
+    private class checkDriverExists {
+        public boolean driverFound = false;
+        public int foundDriverIndex = 0;
+
+        public checkDriverExists(String driverName){
+            for (Formula1Driver currentDriver : driversList){
+                if (currentDriver.getName().equalsIgnoreCase(driverName)){
+                    this.foundDriverIndex = driversList.indexOf(currentDriver);
+                    this.driverFound = !driverFound;
+                }
+            }
+        }
+    }
+
     public void removeDriver(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the driver name to be removed: ");
-        String removeDriver = sc.next();
+        String nameOfDriver = sc.next();
 
-        boolean driverFound = false;
-        int foundDriverIndex = 0;
-        for (Formula1Driver currentDriver : driversList){
-            if (currentDriver.getName().equalsIgnoreCase(removeDriver)){
-                foundDriverIndex = driversList.indexOf(currentDriver);
-                driverFound = !driverFound;
-            }
-        }
-        if(driverFound){
-            System.out.println("Driver "+ driversList.get(foundDriverIndex).getName() + " has been successfully deleted");
-            driversList.remove(foundDriverIndex);
+        checkDriverExists removeDriver = new checkDriverExists(nameOfDriver);
+        if(removeDriver.driverFound){
+            System.out.println("Driver "+ driversList.get(removeDriver.foundDriverIndex).getName() + " has been successfully deleted");
+            driversList.remove(removeDriver.foundDriverIndex);
         }else{
             System.out.println("Sorry, No driver was found with that name.");
         }
@@ -261,18 +269,11 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             while(count < 10 && count < driversList.size()){
                 // Lets user input the driver positions until #10 or to the size of driversList
                 System.out.print("Enter #" +(count+1)+" drivers name: ");
-
                 String nameOfDriver = sc.next();
-                boolean driverExists = false;
-                int driverPosition = 0;
-                for (Formula1Driver currentDriver: driversList){
-                    if(currentDriver.getName().equalsIgnoreCase(nameOfDriver)){
-                        driverPosition = driversList.indexOf(currentDriver);
-                        driverExists = !driverExists;
-                    }
-                }
-                if(driverExists){
-                    newArrayList.add(driversList.get(driverPosition));
+
+                checkDriverExists addDriver = new checkDriverExists(nameOfDriver);
+                if(addDriver.driverFound){
+                    newArrayList.add(driversList.get(addDriver.foundDriverIndex));
                     count++;
                 }
                 else {
