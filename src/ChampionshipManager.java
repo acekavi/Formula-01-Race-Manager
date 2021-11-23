@@ -1,9 +1,10 @@
 import java.lang.reflect.Array;
 
 public interface ChampionshipManager {
-//    void addNewDriver();
-//    void deleteDriver(int driverID);
-//    void changeDriver(int driverID, int teamID);
-//    void displayStatistics(int driverID);
-//    void setStatistics(int driverID, Array statistics[])
+    // Methods mentioned here do not affect the values of the program
+    // You can call menu() to run the private methods that do affect the values
+    void menu();
+    void viewDriver();
+    void displayAllDrivers();
+    void viewRace();
 }

@@ -14,22 +14,6 @@ public class Formula1Driver extends Driver {
         this.totalPoints += pointsGiven[position] * numberOfPlaces;
     }
 
-    public void setTotalRaces(int totalRaces) {
-        this.totalRaces = totalRaces;
-    }
-
-    public int getTotalRaces() {
-        return totalRaces;
-    }
-
-    public int getTotalPoints() {
-        return totalPoints;
-    }
-
-    public int[] getPositionDetails() {
-        return positionDetails;
-    }
-
     public void viewDriverDetails(){
         System.out.println("Driver's Name : " + this.getName());
         System.out.println("Driver's Location: " + this.getLocation());
@@ -46,5 +30,21 @@ public class Formula1Driver extends Driver {
         return (new String[]{this.getTeam().getCarManufacturer(), this.getName(), this.getLocation(),
                 String.valueOf(this.totalPoints), String.valueOf(this.totalRaces), String.valueOf(positionDetails[0]),
                 String.valueOf(positionDetails[1]), String.valueOf(positionDetails[2])});
+    }
+
+    public void setTotalRaces(int totalRaces) {
+        this.totalRaces = totalRaces;
+    }
+
+    public int getTotalRaces() {
+        return totalRaces;
+    }
+
+    public int getTotalPoints() {
+        return totalPoints;
+    }
+
+    public int[] getPositionDetails() {
+        return positionDetails;
     }
 }

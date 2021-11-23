@@ -35,8 +35,8 @@ public class Race {
         StringBuilder driverDetails = new StringBuilder();
         int count = 1;
         for (Formula1Driver thisDriver:driversInRace) {
-            //Returns a string like "#1 - kavinda"
-            driverDetails.append("#").append(count).append(" - ").append(thisDriver.getName());
+            //Append a string like "#1 - Avishka; "
+            driverDetails.append("#").append(count).append(" - ").append(thisDriver.getName()).append("; ");
             count++;
         }
         return ("Date : " + this.raceDate + " Participants : " + driverDetails);

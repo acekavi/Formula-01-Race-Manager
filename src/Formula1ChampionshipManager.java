@@ -132,7 +132,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    private void viewDriver(){
+    public void viewDriver(){
         Scanner sc =  new Scanner(System.in);
         System.out.print("Enter driver's name to view their details: ");
         String driverName = sc.next();
@@ -195,7 +195,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    private void displayAllDrivers(){
+    public void displayAllDrivers(){
         // Cloned the existing driver array to a new array list to retain the original array
         ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
         System.out.printf("%12s %12s %17s %10s %10s %10s %10s %10s \n", "Team", "| Driver", "| Location",
@@ -261,7 +261,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    private void viewRace(){
+    public void viewRace(){
         for( Race thisRace: racesList){
             System.out.println(thisRace.viewRaceDetails());
         }
