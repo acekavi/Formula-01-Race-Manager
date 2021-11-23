@@ -10,32 +10,15 @@ public abstract class  Driver {
         this.team = team;
     }
 
-    //Default constructor with no values
-    public Driver() {
-
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
     public Car getTeam() {
         return team;
-    }
-
-    public void setTeam(Car team) {
-        this.team = team;
     }
 }

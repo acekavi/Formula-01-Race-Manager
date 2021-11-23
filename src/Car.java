@@ -13,6 +13,12 @@ public class Car {
         this.carManufacturer = carManufacturer;
     }
 
+    public Car(Car team) {
+        this.carManufacturer = team.getCarManufacturer();
+        this.carType = team.carType;
+        this.teamRaces = team.teamRaces;
+    }
+
     public String getCarManufacturer() {
         return carManufacturer;
     }

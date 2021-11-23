@@ -4,7 +4,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Race {
     private String raceDate;
-    private ArrayList<Formula1Driver> driversInRace = new ArrayList<>();
+    private ArrayList<Formula1Driver> driversInRace;
 
     public Race( ArrayList<Formula1Driver> driversInRace) {
         LocalDateTime now = LocalDateTime.now();
@@ -29,5 +29,16 @@ public class Race {
                 driversInRace.get(count).setStatistics(count, 1);
             }
         }
+    }
+
+    public String viewRaceDetails(){
+        StringBuilder driverDetails = new StringBuilder();
+        int count = 1;
+        for (Formula1Driver thisDriver:driversInRace) {
+            //Returns a string like "#1 - kavinda"
+            driverDetails.append("#").append(count).append(" - ").append(thisDriver.getName());
+            count++;
+        }
+        return ("Date : " + this.raceDate + " Participants : " + driverDetails);
     }
 }

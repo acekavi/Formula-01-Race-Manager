@@ -3,19 +3,6 @@ public class Formula1Driver extends Driver {
     private int totalPoints;
     private final int[] positionDetails = new int[10];
     private final int[] pointsGiven = {25,18,15,12,10,8,6,4,2,1};
-    
-
-    //    Default constructor with 0 values
-    public Formula1Driver(){
-        super();
-    }
-
-    //    Constructor with all the parameters passed in
-    public Formula1Driver(String name, String location, Car team, int totalRaces, int totalPoints) {
-        super(name, location, team);
-        this.totalRaces = totalRaces;
-        this.totalPoints = totalPoints;
-    }
 
     // Constructor that will be used while creating a new driver
     public Formula1Driver( String name, String location, Car team ){
@@ -23,8 +10,8 @@ public class Formula1Driver extends Driver {
     }
 
     public void setStatistics(int position, int numberOfPlaces){
-        this.positionDetails[position-1] = this.positionDetails[position-1] + numberOfPlaces;
-        this.totalPoints += pointsGiven[position-1] * numberOfPlaces;
+        this.positionDetails[position] = this.positionDetails[position] + numberOfPlaces;
+        this.totalPoints += pointsGiven[position] * numberOfPlaces;
     }
 
     public void setTotalRaces(int totalRaces) {
