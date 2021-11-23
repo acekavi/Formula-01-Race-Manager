@@ -1,8 +1,8 @@
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Formula1ChampionshipManager implements ChampionshipManager{
-    ArrayList<Formula1Driver> driversList =  new ArrayList<>();
+    private ArrayList<Formula1Driver> driversList =  new ArrayList<>();
+    private ArrayList<Race> allRaces = new ArrayList<>();
 
     public void menu(){
         menu:
@@ -10,15 +10,14 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             Scanner sc = new Scanner(System.in);
             System.out.println(
                     """
-                            ==========================-Menu-=========================\s
-                             To add a participant (team with a driver) : A\s
-                             To remove a driver and the relative team  : R\s
-                             To change the driver for an existing team : C\s
-                             To display stats of a driver              : v\s
-                             To display the Formula1 driver table      : T\s
-                             To Exit                                   : Q\s
-                            =========================================================""");
-
+                    ==========================-Menu-=========================\s
+                     To add a participant (team with a driver) : A\s
+                     To remove a driver and the relative team  : R\s
+                     To change the driver for an existing team : C\s
+                     To display stats of a driver              : v\s
+                     To display the Formula1 driver table      : T\s
+                     To Exit                                   : Q\s
+                    =========================================================""");
             try {
                 System.out.print("Option : ");
                 String menuInput = sc.next();
@@ -29,6 +28,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
                     case "c": changeDriver();break;
                     case "v": viewDriver();break;
                     case "t": displayAllDrivers();break;
+                    case "n": addNewRace();break;
                     case "q": break menu;
                 }
             } catch (InputMismatchException x) {
@@ -38,7 +38,12 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         System.exit(0);
     }
 
-    public Car setTeamOfNewDriver(){
+    public ArrayList<Formula1Driver> getDriversList() {
+        return driversList;
+    }
+
+    // This class was made to help me reuse the add new driver class for the change driver method as well
+    private Car setTeamOfNewDriver(){
         Scanner sc =  new Scanner(System.in);
         //Drivers Team
         System.out.print("Enter driver's team: ");
@@ -47,7 +52,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         return new Car(driverTeam);
     }
 
-    public void addNewDriver(Car driverTeam){
+    private void addNewDriver(Car driverTeam){
         Scanner sc =  new Scanner(System.in);
 
         //Drivers Name
@@ -80,7 +85,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void setStatistics(Formula1Driver driver){
+    private void setStatistics(Formula1Driver driver){
         Scanner input = new Scanner(System.in);
         System.out.print("Enter the number of races, the driver has participated in: ");
         int numberOfRaces = input.nextInt();
@@ -100,7 +105,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void addPosition(Formula1Driver driver, String option){
+    private void addPosition(Formula1Driver driver, String option){
         Scanner input = new Scanner(System.in);
         if (option.equalsIgnoreCase("y")){
             System.out.print("Enter the place : ");
@@ -127,7 +132,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void viewDriver(){
+    private void viewDriver(){
         Scanner sc =  new Scanner(System.in);
         boolean driverFound = false;
 
@@ -144,7 +149,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void removeDriver(){
+    private void removeDriver(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the driver name to be removed: ");
         String removeDriver = sc.next();
@@ -181,7 +186,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             }
         }
         if(teamFound){
-            Car teamInfo = driversList.get(foundDriverIndex).getTeam();
+            Car teamInfo = new Car(driversList.get(foundDriverIndex).getTeam().getCarManufacturer());
 
             //Drivers Name
             System.out.print("Enter new driver's name: ");
@@ -200,21 +205,44 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             System.out.println("Driver for the team "+ teamInfo.getCarManufacturer()
                     + " has been successfully changed");
         }else{
-            System.out.println("Sorry, No team was found with that name.");
+            System.out.println("Sorry, No team was found with that name");
         }
     }
 
     private void displayAllDrivers(){
-
+        // Cloned the existing driver array to a new array list to retain the original array
+        ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
         System.out.printf("%12s %12s %17s %10s %10s %10s %10s %10s \n", "Team", "| Driver", "| Location",
                 "| Points", "| Races", "| 1st places", "| 2nd places", "| 3rd places |" );
 
-
-        for(Formula1Driver currentDriver: driversList){
+        //Sorting the array with the customised comparator method
+        Collections.sort(newArrayList, new PointsComparator());
+        for(Formula1Driver currentDriver: newArrayList){
+            //Gets the list containing the needed values from the Formula1Driver class
             String[] details = currentDriver.tableDisplay();
             System.out.printf("%12s %12s %15s %11s %11s %11s %11s %11s \n", details[0], details[1], details[2],
                     details[3], details[4], details[5], details[6], details[7]);
         }
+    }
 
+    private void addNewRace(){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Press R to randomize positions\n" +
+                "Press Y to add positions of the drivers who participated in the race: ");
+        String option = sc.next();
+
+        //Cloning the original driver list to shuffle the array
+        ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
+        Collections.shuffle(newArrayList);
+
+        if(option.equalsIgnoreCase("r")){
+            Race shuffledRace = new Race(newArrayList);
+        }
+        else if(option.equalsIgnoreCase("r")){
+            int count = 0;
+            while(count < 10){
+
+            }
+        }
     }
 }

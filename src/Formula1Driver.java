@@ -23,7 +23,7 @@ public class Formula1Driver extends Driver {
     }
 
     public void setStatistics(int position, int numberOfPlaces){
-        this.positionDetails[position-1] = numberOfPlaces;
+        this.positionDetails[position-1] = this.positionDetails[position-1] + numberOfPlaces;
         this.totalPoints += pointsGiven[position-1] * numberOfPlaces;
     }
 
@@ -55,6 +55,7 @@ public class Formula1Driver extends Driver {
     }
 
     public String[] tableDisplay(){
+        // Return a string containing TeamName-DriverName-Location-Points-Races-1st-2nd-3rd
         return (new String[]{this.getTeam().getCarManufacturer(), this.getName(), this.getLocation(),
                 String.valueOf(this.totalPoints), String.valueOf(this.totalRaces), String.valueOf(positionDetails[0]),
                 String.valueOf(positionDetails[1]), String.valueOf(positionDetails[2])});
