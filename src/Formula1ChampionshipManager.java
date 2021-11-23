@@ -11,7 +11,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             Scanner sc = new Scanner(System.in);
             System.out.println(
                     """
-                            
+                        
                             ==========================-Menu-=========================\s
                              To add a participant (team with a driver) : A\s
                              To remove a driver and the relative team  : R\s
@@ -49,27 +49,27 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
     }
 
     public void readFromFile() {
-        String driverDataPath = new File("data/driverData.ser").getAbsolutePath();
-        String raceDataPath = new File("data/raceData.ser").getAbsolutePath();
+        String driverDataPath = new File("src/data/driverData.ser").getAbsolutePath();
+        String raceDataPath = new File("src/data/raceData.ser").getAbsolutePath();
         FileHandler readHandler = new FileHandler();
 
         //Reads driver related data from the driver save file
-        driversList = (readHandler.ReadObjectFromFile(driverDataPath));
+        driversList = (readHandler.readObjectFile(driverDataPath));
 
         //Reads race related data from the race save file
-        racesList = (readHandler.ReadObjectFromFile(raceDataPath));
+        racesList = (readHandler.readObjectFile(raceDataPath));
     }
 
     public void saveToFile() {
         String driverDataPath = new File("src/data/driverData.ser").getAbsolutePath();
-        String raceDataPath = new File("data/raceData.ser").getAbsolutePath();
+        String raceDataPath = new File("src/data/raceData.ser").getAbsolutePath();
         FileHandler saveHandler = new FileHandler();
 
         //Saves driver related data to the driver save file
-        saveHandler.WriteObjectToFile(driverDataPath, driversList);
+        saveHandler.writeObjectToFile(driverDataPath, driversList);
 
         //Saves race related data to the race save file
-        saveHandler.WriteObjectToFile(raceDataPath, racesList);
+        saveHandler.writeObjectToFile(raceDataPath, racesList);
     }
 
     // This class was made to help me reuse the add new driver class for the change driver method as well
@@ -261,6 +261,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             while(count < 10 && count < driversList.size()){
                 // Lets user input the driver positions until #10 or to the size of driversList
                 System.out.print("Enter #" +(count+1)+" drivers name: ");
+
                 String nameOfDriver = sc.next();
                 boolean driverExists = false;
                 int driverPosition = 0;
