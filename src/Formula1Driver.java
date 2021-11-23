@@ -1,4 +1,6 @@
-public class Formula1Driver extends Driver {
+import java.io.Serializable;
+
+public class Formula1Driver extends Driver implements Serializable{
     private int totalRaces;
     private int totalPoints;
     private final int[] positionDetails = new int[10];
@@ -18,8 +20,8 @@ public class Formula1Driver extends Driver {
         System.out.println("Driver's Name : " + this.getName());
         System.out.println("Driver's Location: " + this.getLocation());
         System.out.println("Driver's Team: " + this.getTeam().getCarManufacturer());
-        System.out.println("Total Points the driver has: "+ this.getTotalPoints());
-        System.out.println("Total Races the driver has participated in: "+ this.getTotalRaces());
+        System.out.println("Total Points the driver has: "+ this.totalPoints);
+        System.out.println("Total Races the driver has participated in: "+ this.totalRaces);
         System.out.println("Total first places: "+ positionDetails[0]);
         System.out.println("Total second places: "+ positionDetails[1]);
         System.out.println("Total third places: "+ positionDetails[2]);

@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Race {
+public class Race implements Serializable {
     private String raceDate;
     private ArrayList<Formula1Driver> driversInRace;
 

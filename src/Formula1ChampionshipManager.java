@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.*;
 
 public class Formula1ChampionshipManager implements ChampionshipManager{
@@ -10,17 +11,20 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             Scanner sc = new Scanner(System.in);
             System.out.println(
                     """
-                    ==========================-Menu-=========================\s
-                     To add a participant (team with a driver) : A\s
-                     To remove a driver and the relative team  : R\s
-                     To change the driver for an existing team : C\s
-                     To display stats of a driver              : V\s
-                     To display the Formula1 driver table      : T\s
-                     To add a new race                         : N\s
-                     To view the race details                  : S\s
-                     To Exit                                   : Q\s
-                    =========================================================
-                    """);
+                            
+                            ==========================-Menu-=========================\s
+                             To add a participant (team with a driver) : A\s
+                             To remove a driver and the relative team  : R\s
+                             To change the driver for an existing team : C\s
+                             To display stats of a driver              : V\s
+                             To display the Formula1 driver table      : T\s
+                             To add a new completed race               : N\s
+                             To view the race details                  : D\s
+                             To save details to a file                 : S\s
+                             To import details to a file               : I\s
+                             To Exit                                   : Q\s
+                            =========================================================
+                            """);
             try {
                 System.out.print("Option : ");
                 String menuInput = sc.next();
@@ -32,7 +36,9 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
                     case "v": viewDriver();break;
                     case "t": displayAllDrivers();break;
                     case "n": addNewRace();break;
-                    case "s": viewRace();break;
+                    case "d": viewRace();break;
+                    case "s": saveToFile();break;
+                    case "i": readFromFile();break;
                     case "q": break menu;
                 }
             } catch (InputMismatchException x) {
@@ -42,18 +48,42 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         System.exit(0);
     }
 
+    public void readFromFile() {
+        String driverDataPath = new File("data/driverData.ser").getAbsolutePath();
+        String raceDataPath = new File("data/raceData.ser").getAbsolutePath();
+        FileHandler readHandler = new FileHandler();
+
+        //Reads driver related data from the driver save file
+        driversList = (readHandler.ReadObjectFromFile(driverDataPath));
+
+        //Reads race related data from the race save file
+        racesList = (readHandler.ReadObjectFromFile(raceDataPath));
+    }
+
+    public void saveToFile() {
+        String driverDataPath = new File("src/data/driverData.ser").getAbsolutePath();
+        String raceDataPath = new File("data/raceData.ser").getAbsolutePath();
+        FileHandler saveHandler = new FileHandler();
+
+        //Saves driver related data to the driver save file
+        saveHandler.WriteObjectToFile(driverDataPath, driversList);
+
+        //Saves race related data to the race save file
+        saveHandler.WriteObjectToFile(raceDataPath, racesList);
+    }
+
     // This class was made to help me reuse the add new driver class for the change driver method as well
-    private Car setTeamOfNewDriver(){
+    private String setTeamOfNewDriver(){
         Scanner sc =  new Scanner(System.in);
         //Drivers Team
         System.out.print("Enter driver's team: ");
-        String driverTeam = sc.next();
 
-        return new Car(driverTeam);
+        return sc.next();
     }
 
-    private void addNewDriver(Car driverTeam){
+    public void addNewDriver(String teamName){
         Scanner sc =  new Scanner(System.in);
+        Car driverTeam = new Car(teamName);
 
         //Drivers Name
         System.out.print("Enter driver's name: ");
@@ -148,7 +178,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    private void removeDriver(){
+    public void removeDriver(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the driver name to be removed: ");
         String removeDriver = sc.next();
@@ -169,7 +199,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    private void changeDriver() {
+    public void changeDriver(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the team name to be changed: ");
         String teamName = sc.next();
@@ -189,7 +219,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             Car teamInfo = new Car(driversList.get(foundDriverIndex).getTeam());
             driversList.remove(foundDriverIndex);
             //Add new driver method is reused to add the driver with the original class object which was cloned
-            addNewDriver(teamInfo);
+            addNewDriver(teamInfo.getCarManufacturer());
         }else{
             System.out.println("Sorry, No team was found with that name");
         }
@@ -211,7 +241,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    private void addNewRace(){
+    public void addNewRace(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Press R to randomize positions\n" +
                 "Press Y to add positions of the drivers who participated in the race: ");

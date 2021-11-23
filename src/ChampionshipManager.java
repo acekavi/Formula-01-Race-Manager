@@ -1,10 +1,15 @@
 import java.lang.reflect.Array;
 
 public interface ChampionshipManager {
-    // Methods mentioned here do not affect the values of the program
-    // You can call menu() to run the private methods that do affect the values
+    // Methods that can be publicly called is put here
     void menu();
+    void addNewDriver(String driverTeam);
     void viewDriver();
+    void removeDriver();
+    void changeDriver();
     void displayAllDrivers();
+    void addNewRace();
     void viewRace();
+    void readFromFile();
+    void saveToFile();
 }
