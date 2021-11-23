@@ -238,11 +238,15 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         if(option.equalsIgnoreCase("r")){
             Race shuffledRace = new Race(newArrayList);
         }
-        else if(option.equalsIgnoreCase("r")){
+        else if(option.equalsIgnoreCase("y")){
             int count = 0;
             while(count < 10){
-
+                // WRITE THE FUNCTIONALITY OF USER INPUTING THE POSITIONS
+                count++;
             }
+        }
+        else {
+            System.out.println("Please enter a valid value");
         }
     }
 }

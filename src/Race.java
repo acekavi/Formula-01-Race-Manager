@@ -9,8 +9,7 @@ public class Race {
     public Race( ArrayList<Formula1Driver> driversInRace) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        String formatDateTime = now.format(format);
-        this.raceDate = formatDateTime;
+        this.raceDate = now.format(format);
         this.driversInRace = driversInRace;
 
         //Running the increment functions everytime a race is created
