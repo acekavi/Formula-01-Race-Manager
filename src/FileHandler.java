@@ -10,6 +10,7 @@ public class FileHandler {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
 
+            // Saves the arraylist in bytecode using Serializers
             objectOut.writeObject(toWriteObject);
             objectOut.close();
             System.out.println("File has been saved successfully!");
@@ -21,6 +22,8 @@ public class FileHandler {
 
     public ArrayList readObjectFile(String filepath) {
         try {
+
+            // Reads the bytecode in the file to an arraylist and returns it
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             ArrayList obj = (ArrayList)objectIn.readObject();
