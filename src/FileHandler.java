@@ -22,10 +22,10 @@ public class FileHandler {
 
     public ArrayList readObjectFile(String filepath) {
         try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
             // Reads the bytecode in the file to an arraylist and returns it
+            FileInputStream fileIn = new FileInputStream(filepath);
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             ArrayList obj = (ArrayList)objectIn.readObject();
             System.out.println("File has been read successfully!");
             objectIn.close();

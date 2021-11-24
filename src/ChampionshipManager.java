@@ -1,6 +1,8 @@
-public interface ChampionshipManager {
+import java.lang.reflect.Array;
 
-    // Methods that will be available in all championshipManager classes
+public interface ChampionshipManager {
+    // Methods that can be publicly called is put here
+    void menu();
     void addNewDriver(String driverTeam);
     void viewDriver();
     void removeDriver();
