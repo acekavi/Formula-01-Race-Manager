@@ -23,15 +23,14 @@ public class FileHandler {
         try {
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-
             ArrayList obj = (ArrayList)objectIn.readObject();
             System.out.println("File has been read successfully!");
             objectIn.close();
             return obj;
 
         } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
+            System.out.println("File is empty or unavailable!");
+            return new ArrayList();
         }
     }
 }
