@@ -42,4 +42,14 @@ public class Race implements Serializable {
         }
         return ("Date : " + this.raceDate + " Participants : " + driverDetails);
     }
+
+    public String[] loadRaceTable(){
+        String[] raceDetails = new String[driversInRace.size() + 1];
+        raceDetails[0] = raceDate;
+        for (Formula1Driver thisDriver : driversInRace){
+            int count = driversInRace.indexOf(thisDriver) + 1;
+            raceDetails[count] = thisDriver.getName();
+        }
+        return raceDetails;
+    }
 }

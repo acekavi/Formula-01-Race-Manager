@@ -60,7 +60,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         racesList = (readHandler.readObjectFile(raceDataPath));
     }
 
-    public void saveToFile() {
+    private void saveToFile() {
         String driverDataPath = new File("src/data/driverData.ser").getAbsolutePath();
         String raceDataPath = new File("src/data/raceData.ser").getAbsolutePath();
         FileHandler saveHandler = new FileHandler();
@@ -81,7 +81,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         return sc.nextLine();
     }
 
-    public void addNewDriver(String teamName){
+    private void addNewDriver(String teamName){
         Scanner sc =  new Scanner(System.in);
         //Drivers Name
         System.out.print("Enter driver's name: ");
@@ -192,7 +192,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void removeDriver(){
+    private void removeDriver(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the driver name to be removed: ");
         String nameOfDriver = sc.next();
@@ -206,7 +206,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void changeDriver(){
+    private void changeDriver(){
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the team name to be changed: ");
         String teamName = sc.next();
