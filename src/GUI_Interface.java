@@ -7,6 +7,8 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
 
@@ -107,17 +109,6 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         JScrollPane raceScrollPane = new JScrollPane(raceTable);
         raceTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
-        raceTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-            public void valueChanged(ListSelectionEvent event) {
-                // do some actions here, for example
-                // print first column value from selected row
-                int foundIndex = 0;
-                for (Race thisRace: racesList){
-                    if(thisRace.getRaceDate().equalsIgnoreCase(raceTable.getValueAt(raceTable.getSelectedRow(), 0).toString()));
-                }
-                System.out.println(racesList.get(foundIndex).viewRaceDetails());
-            }
-        });
 
         //Race Detail Table
         String raceDetailColumns[] = {"Position", "Start Position", "Place"};
@@ -130,6 +121,16 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         JScrollPane raceDtlScrollPane = new JScrollPane(raceDetailTable);
         raceDetailTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
+        raceTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    JTable target = (JTable)e.getSource();
+                    int row = target.getSelectedRow();
+                    TableModel raceDtlTableModel = new DefaultTableModel(racesList.get(row).displayStartPositions(), raceDetailColumns);
+                    raceDetailTable.setModel(raceDtlTableModel);
+                }
+            }
+        });
 
         //Buttons
         JButton randomRaceBtn = new JButton("Add new race");
@@ -144,59 +145,25 @@ class MainFrame extends JFrame implements ChampionshipManager {
             }
         });
 
-        JButton randomProbRaceBtn = new JButton("Add new probability race");
-        randomProbRaceBtn.setToolTipText("New random race according to probabilities will be added");
-        randomProbRaceBtn.setFocusPainted(false);
-        randomProbRaceBtn.addActionListener(new ActionListener() {
+        JButton raceSortBtn = new JButton("Sort by Race Date");
+        raceSortBtn.setToolTipText("Sort the table using race date in ascending order");
+        raceSortBtn.setFocusPainted(false);
+        raceSortBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Shuffles the existing array list to get random starting positions
-                ArrayList<Formula1Driver> startPositionsArray = new ArrayList<>(driversList);
-                Collections.shuffle(startPositionsArray);
-
-                ArrayList<Formula1Driver> probabilityArray = new ArrayList<>();
-                // 1st position player has 4/10 prob
-                probabilityArray.add(startPositionsArray.get(0));
-                probabilityArray.add(startPositionsArray.get(0));
-                probabilityArray.add(startPositionsArray.get(0));
-                probabilityArray.add(startPositionsArray.get(0));
-
-                // 2nd position player has 3/10 prob
-                probabilityArray.add(startPositionsArray.get(1));
-                probabilityArray.add(startPositionsArray.get(1));
-                probabilityArray.add(startPositionsArray.get(1));
-
-                // 3rd position player has 1/10 prob
-                probabilityArray.add(startPositionsArray.get(2));
-
-                // 4th position player has 1/10 prob
-                probabilityArray.add(startPositionsArray.get(3));
-
-                //5th - 9th has 0.2/10 probability
-                Random randomInt = new Random();
-                int randomIndex = randomInt.nextInt(5);
-                // Adding a random player who is between 5th and 9th position
-                probabilityArray.add(startPositionsArray.get(randomIndex + 4));
-
-                // Shuffling the probability array to get the first position to random player with probabilities
-                Collections.shuffle(probabilityArray);
-
-                // LinkedHashSet is used to avoid object duplication
-                Set<Formula1Driver> set = new LinkedHashSet<>();
-                // Setting the first place to position probability
-                set.add(probabilityArray.get(0));
-                set.addAll(startPositionsArray);
-                ArrayList<Formula1Driver> finalPlacesArray = new ArrayList<>(set);
-
-                refreshDriverTable(driverTable, driverColumns);
-                addNewRace(finalPlacesArray, startPositionsArray);
-                TableModel raceTableModel = new DefaultTableModel(loadDataRaceTable(racesList), raceColumns);
-                raceTable.setModel(raceTableModel);
+                raceTable.setAutoCreateRowSorter(true);
+                // DefaultRowSorter has the sort() method
+                DefaultRowSorter sorter = ((DefaultRowSorter) raceTable.getRowSorter());
+                ArrayList list = new ArrayList();
+                list.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+                sorter.setSortKeys(list);
+                sorter.sort();
             }
         });
 
         JPanel raceButtons = new JPanel();
         raceButtons.add(randomRaceBtn);
-        raceButtons.add(randomProbRaceBtn);
+//        raceButtons.add(randomProbRaceBtn);
+        raceButtons.add(raceSortBtn);
 
         //Panel Layout
         racePanel.add(raceScrollPane, BorderLayout.WEST);
