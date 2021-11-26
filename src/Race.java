@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 public class Race implements Serializable {
 
     private String raceDate;
+
     private ArrayList<Formula1Driver> driversInRace;
     private ArrayList<Formula1Driver> startingPositions;
 
@@ -58,7 +59,7 @@ public class Race implements Serializable {
 
     public String[][] displayStartPositions(){
         String[][] PositionDetails = new String[driversInRace.size()][3];
-        for (Formula1Driver thisDriver : startingPositions){
+        for (Formula1Driver thisDriver : driversInRace){
             int count = startingPositions.indexOf(thisDriver);
             PositionDetails[count][0] = String.valueOf(count + 1);
             PositionDetails[count][1] = thisDriver.getName();
@@ -67,7 +68,27 @@ public class Race implements Serializable {
         return PositionDetails;
     }
 
-    public String getRaceDate() {
-        return raceDate;
+    public Boolean searchDriver(String driverName) {
+        Boolean driverExists = false;
+        for (Formula1Driver thisDriver:driversInRace){
+            if (thisDriver.getName().equalsIgnoreCase(driverName)){
+                driverExists = true;
+            }
+        }
+        return driverExists;
     }
+
+    public Object[] driverRaceStats(String driverName){
+        Object[] driverRaceDetails = new Object[4];
+        for (Formula1Driver thisDriver : startingPositions){
+            if(thisDriver.getName().equalsIgnoreCase(driverName)){
+                driverRaceDetails[0] = raceDate;
+                driverRaceDetails[1] = thisDriver.getName();
+                driverRaceDetails[2] = startingPositions.indexOf(thisDriver) + 1;
+                driverRaceDetails[3] = driversInRace.indexOf(thisDriver) + 1;
+            }
+        }
+        return driverRaceDetails;
+    }
+
 }

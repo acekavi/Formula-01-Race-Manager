@@ -1,6 +1,4 @@
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
@@ -90,7 +88,6 @@ class MainFrame extends JFrame implements ChampionshipManager {
         driverButtons.add(ascendingBtn);
         driverButtons.add(positionBtn);
 
-
         //Panel Layout
         driverPanel.add(driverScrollPane, BorderLayout.NORTH);
         driverPanel.add(driverButtons, BorderLayout.SOUTH);
@@ -99,7 +96,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
         JPanel racePanel = new JPanel(new BorderLayout());
 
         // Races Table
-        String raceColumns[] = {"Date", "#1 Position", "#2 Position", "#3 Position"};
+        String raceColumns[] = {"Date", "#1 Place", "#2 Place", "#3 Place"};
         JTable raceTable = new JTable(loadDataRaceTable(racesList), raceColumns);
         raceTable.setDefaultEditor(Object.class, null);
         JTableHeader raceTblHeader = raceTable.getTableHeader();
@@ -111,7 +108,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
         raceTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
         //Race Detail Table
-        String raceDetailColumns[] = {"Position", "Start Position", "Place"};
+        String raceDetailColumns[] = {"Start Position", "Driver Name", "# Place"};
         JTable raceDetailTable = new JTable(racesList.get(0).displayStartPositions(), raceDetailColumns);
         raceDetailTable.setDefaultEditor(Object.class, null);
         JTableHeader raceDtlTblHeader = raceDetailTable.getTableHeader();
@@ -145,6 +142,63 @@ class MainFrame extends JFrame implements ChampionshipManager {
             }
         });
 
+        JButton randomProbRaceBtn = new JButton("Add new probability race");
+        randomProbRaceBtn.setToolTipText("New random race according to probabilities will be added");
+        randomProbRaceBtn.setFocusPainted(false);
+        randomProbRaceBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Shuffles the existing array list to get random starting positions
+                ArrayList<Formula1Driver> startPositionsArray = new ArrayList<>(driversList);
+                Collections.shuffle(startPositionsArray);
+
+                ArrayList<Formula1Driver> probabilityArray = new ArrayList<>();
+                // 1st position player has 4/10 prob
+                probabilityArray.add(startPositionsArray.get(0));
+                probabilityArray.add(startPositionsArray.get(0));
+                probabilityArray.add(startPositionsArray.get(0));
+                probabilityArray.add(startPositionsArray.get(0));
+
+                // 2nd position player has 3/10 prob
+                probabilityArray.add(startPositionsArray.get(1));
+                probabilityArray.add(startPositionsArray.get(1));
+                probabilityArray.add(startPositionsArray.get(1));
+
+                // 3rd position player has 1/10 prob
+                probabilityArray.add(startPositionsArray.get(2));
+
+                // 4th position player has 1/10 prob
+                probabilityArray.add(startPositionsArray.get(3));
+
+                //5th - 9th has 0.2/10 probability
+                Random randomInt = new Random();
+                int randomIndex = randomInt.nextInt(5);
+                // Adding a random player who is between 5th and 9th position
+                probabilityArray.add(startPositionsArray.get(randomIndex + 4));
+
+                // Shuffling the probability array to get the first position to random player with probabilities
+                Collections.shuffle(probabilityArray);
+
+                // LinkedHashSet is used to avoid object duplication
+                Set<Formula1Driver> set = new LinkedHashSet<>();
+                // Setting the first place to position probability
+                set.add(probabilityArray.get(0));
+
+                //Cloning the array before shuffling it again to randomise other places
+                ArrayList<Formula1Driver> beforeShuffle = new ArrayList(startPositionsArray);
+                Collections.shuffle(startPositionsArray);
+
+                set.addAll(startPositionsArray);
+                ArrayList<Formula1Driver> finalPlacesArray = new ArrayList<>(set);
+
+                Race shuffledRace = new Race(finalPlacesArray, beforeShuffle);
+                racesList.add(shuffledRace);
+
+                refreshDriverTable(driverTable, driverColumns);
+                TableModel raceTableModel = new DefaultTableModel(loadDataRaceTable(racesList), raceColumns);
+                raceTable.setModel(raceTableModel);
+            }
+        });
+
         JButton raceSortBtn = new JButton("Sort by Race Date");
         raceSortBtn.setToolTipText("Sort the table using race date in ascending order");
         raceSortBtn.setFocusPainted(false);
@@ -162,12 +216,78 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         JPanel raceButtons = new JPanel();
         raceButtons.add(randomRaceBtn);
-//        raceButtons.add(randomProbRaceBtn);
+        raceButtons.add(randomProbRaceBtn);
         raceButtons.add(raceSortBtn);
 
+        // Search bar
+        JPanel searchPanel= new JPanel();
+        JLabel labelBtn = new JLabel("Search by Driver Name: ");
+        JTextField driverSearchTxt = new JTextField(10);
+
+        //Search Detail Table
+        String searchDetailColumns[] = {"Race Date", "Driver", "Start Position", "# Place"};
+
+        String[][] nullArray = {{" "," "," "," "},{" "," "," "," "},{" "," "," "," "}};
+
+        JTable searchDetailTable = new JTable(nullArray, searchDetailColumns);
+        searchDetailTable.setDefaultEditor(Object.class, null);
+        JTableHeader searchDtlTblHeader = searchDetailTable.getTableHeader();
+        searchDtlTblHeader.setBackground(Color.gray);
+        searchDtlTblHeader.setForeground(Color.white);
+        searchDtlTblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
+
+        JScrollPane searchDtlScrollPane = new JScrollPane(searchDetailTable);
+        searchDetailTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+        JButton searchBtn = new JButton("Search");
+        searchBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try{
+                    String driverName = driverSearchTxt.getText();
+
+                    ArrayList<Race> searchArray = new ArrayList<>();
+                    for (Race thisRace: racesList){
+                        if(thisRace.searchDriver(driverName)){
+                            searchArray.add(thisRace);
+                        }
+                    }
+                    Object[][] searchDetails = new Object[searchArray.size()][4];
+                    int count = 0;
+                    for (Race thisRace : searchArray){
+                        searchDetails[count] = thisRace.driverRaceStats(driverName);
+                        count++;
+                    }
+
+                    if(searchArray.size()==0){
+                        JOptionPane.showMessageDialog(searchPanel, "No driver was found!");
+                    }
+                    else {
+                        TableModel searchTableModel = new DefaultTableModel(searchDetails, searchDetailColumns);
+                        searchDetailTable.setModel(searchTableModel);
+                    }
+                }
+                catch (Exception ex){
+                    System.out.println(ex);
+                    JOptionPane.showMessageDialog(searchPanel, "No driver was found!");
+                }
+            }
+        });
+
+        searchPanel.add(labelBtn);
+        searchPanel.add(driverSearchTxt);
+        searchPanel.add(searchBtn);
+
+        JPanel searchParentPnl = new JPanel(new BorderLayout());
+        searchParentPnl.add(searchPanel, BorderLayout.NORTH);
+        searchParentPnl.add(searchDtlScrollPane, BorderLayout.CENTER);
+
+        JPanel tablesPanel= new JPanel();
         //Panel Layout
-        racePanel.add(raceScrollPane, BorderLayout.WEST);
-        racePanel.add(raceDtlScrollPane, BorderLayout.EAST);
+        tablesPanel.add(raceScrollPane, BorderLayout.WEST);
+        tablesPanel.add(raceDtlScrollPane, BorderLayout.EAST);
+
+        racePanel.add(tablesPanel, BorderLayout.NORTH);
+        racePanel.add(searchParentPnl,BorderLayout.CENTER);
         racePanel.add(raceButtons, BorderLayout.SOUTH);
 
 //----------------------------------------------------About me Panel----------------------------------------------------
@@ -184,7 +304,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
         tabs.add("Driver Details", driverPanel);
         tabs.add("Race Details", racePanel);
         tabs.add("About Me", p3);
-
+//        this.setDefaultLookAndFeelDecorated(true);
 
         //Add tabs to the frame
         this.add(tabs, BorderLayout.CENTER);
