@@ -35,7 +35,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
                     case "c": changeDriver();break;
                     case "v": viewDriver();break;
                     case "t": displayAllDrivers();break;
-                    case "n": addNewRace();break;
+                    case "n": addNewRace(driversList, driversList);break;
                     case "d": viewRace();break;
                     case "s": saveToFile();break;
                     case "i": readFromFile();break;
@@ -248,7 +248,7 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
         }
     }
 
-    public void addNewRace(){
+    public void addNewRace(ArrayList<Formula1Driver> driversListInRace, ArrayList<Formula1Driver> driversPositionsInRace){
         Scanner sc = new Scanner(System.in);
         System.out.print("Press R to randomize positions\n" +
                 "Press Y to add positions of the drivers who participated in the race: ");
@@ -256,23 +256,23 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
 
         if(option.equalsIgnoreCase("r")){
             //Cloning the original driver list to shuffle the array
-            ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
+            ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversListInRace);
             Collections.shuffle(newArrayList);
-            Race shuffledRace = new Race(newArrayList);
+            Race shuffledRace = new Race(newArrayList, driversList);
             racesList.add(shuffledRace);
         }
         else if(option.equalsIgnoreCase("y")){
             //Creating a new array to hold user entered driver positions
             ArrayList<Formula1Driver> newArrayList = new ArrayList<>();
             int count = 0;
-            while(count < 10 && count < driversList.size()){
+            while(count < 10 && count < driversListInRace.size()){
                 // Lets user input the driver positions until #10 or to the size of driversList
                 System.out.print("Enter #" +(count+1)+" drivers name: ");
                 String nameOfDriver = sc.next();
 
                 checkDriverExists addDriver = new checkDriverExists(nameOfDriver);
                 if(addDriver.driverFound){
-                    newArrayList.add(driversList.get(addDriver.foundDriverIndex));
+                    newArrayList.add(driversListInRace.get(addDriver.foundDriverIndex));
                     count++;
                 }
                 else {
@@ -281,10 +281,10 @@ public class Formula1ChampionshipManager implements ChampionshipManager{
             }
             //Add the remaining drivers to the array without duplication
             Set<Formula1Driver> set = new LinkedHashSet<>(newArrayList);
-            set.addAll(driversList);
+            set.addAll(driversListInRace);
             ArrayList<Formula1Driver> combinedList = new ArrayList<>(set);
 
-            Race userInputRace = new Race(combinedList);
+            Race userInputRace = new Race(combinedList, driversList);
             racesList.add(userInputRace);
         }
         else {

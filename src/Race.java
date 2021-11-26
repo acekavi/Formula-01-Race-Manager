@@ -4,14 +4,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Race implements Serializable {
+
     private String raceDate;
     private ArrayList<Formula1Driver> driversInRace;
+    private ArrayList<Formula1Driver> startingPositions;
 
-    public Race( ArrayList<Formula1Driver> driversInRace) {
+    public Race( ArrayList<Formula1Driver> driversInRace, ArrayList<Formula1Driver> startingPositions) {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter format = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         this.raceDate = now.format(format);
         this.driversInRace = driversInRace;
+        this.startingPositions = startingPositions;
 
         //Running the increment functions everytime a race is created
         incrementRace();
@@ -51,5 +54,20 @@ public class Race implements Serializable {
             raceDetails[count] = thisDriver.getName();
         }
         return raceDetails;
+    }
+
+    public String[][] displayStartPositions(){
+        String[][] PositionDetails = new String[driversInRace.size()][3];
+        for (Formula1Driver thisDriver : startingPositions){
+            int count = startingPositions.indexOf(thisDriver);
+            PositionDetails[count][0] = String.valueOf(count + 1);
+            PositionDetails[count][1] = thisDriver.getName();
+            PositionDetails[count][2] = String.valueOf(driversInRace.indexOf(thisDriver) + 1);
+        }
+        return PositionDetails;
+    }
+
+    public String getRaceDate() {
+        return raceDate;
     }
 }
