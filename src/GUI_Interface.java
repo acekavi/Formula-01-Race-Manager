@@ -108,7 +108,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
         raceTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
         //Race Detail Table
-        String raceDetailColumns[] = {"Start Position", "Driver Name", "# Place"};
+        String raceDetailColumns[] = {"Start Position", "Driver Name", "#Place"};
         JTable raceDetailTable = new JTable(racesList.get(0).displayStartPositions(), raceDetailColumns);
         raceDetailTable.setDefaultEditor(Object.class, null);
         JTableHeader raceDtlTblHeader = raceDetailTable.getTableHeader();
@@ -319,7 +319,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
     }
 
     private Object[][] loadDataDriverTable(ArrayList<Formula1Driver> dataList) {
-        Object driverData[][] = new Object[dataList.size()][8];
+        Object[][] driverData = new Object[dataList.size()][8];
         for (Formula1Driver thisDriver : dataList) {
             int thisCount = dataList.indexOf(thisDriver);
 
@@ -332,7 +332,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
     }
 
     private Object[][] loadDataRaceTable(ArrayList<Race> dataList) {
-        Object raceData[][] = new Object[dataList.size()][8];
+        Object[][] raceData = new Object[dataList.size()][8];
         for (Race thisRace : racesList) {
             int thisCount = dataList.indexOf(thisRace);
             raceData[thisCount] = new Object[]{thisRace.loadRaceTable()[0], thisRace.loadRaceTable()[1],
