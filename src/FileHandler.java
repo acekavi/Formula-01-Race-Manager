@@ -13,7 +13,7 @@ public class FileHandler {
             // Saves the arraylist in bytecode using Serializers
             objectOut.writeObject(toWriteObject);
             objectOut.close();
-            System.out.println("File has been saved successfully!");
+//            System.out.println("File has been saved successfully!");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -22,17 +22,17 @@ public class FileHandler {
 
     public ArrayList readObjectFile(String filepath) {
         try {
-            FileInputStream fileIn = new FileInputStream(filepath);
-            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
 
             // Reads the bytecode in the file to an arraylist and returns it
+            FileInputStream fileIn = new FileInputStream(filepath);
+            ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             ArrayList obj = (ArrayList)objectIn.readObject();
-            System.out.println("File has been read successfully!");
+//            System.out.println("File has been read successfully!");
             objectIn.close();
             return obj;
 
         } catch (Exception ex) {
-            System.out.println("File is empty or unavailable!");
+//            System.out.println("File is empty or unavailable!");
             return new ArrayList();
         }
     }

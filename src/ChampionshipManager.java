@@ -1,13 +1,7 @@
-public interface ChampionshipManager {
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
-    // Methods that will be available in all championshipManager classes
-    void addNewDriver(String driverTeam);
-    void viewDriver();
-    void removeDriver();
-    void changeDriver();
-    void displayAllDrivers();
-    void addNewRace();
-    void viewRace();
+public interface ChampionshipManager {
     void readFromFile();
-    void saveToFile();
+    void addNewRace(ArrayList<Formula1Driver> driversListInRace, ArrayList<Formula1Driver> driversPositionsInRace);
 }
