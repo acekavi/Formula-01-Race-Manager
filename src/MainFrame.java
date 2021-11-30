@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.text.Normalizer;
 import java.util.*;
 
 class MainFrame extends JFrame implements ChampionshipManager {
@@ -16,23 +17,24 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
     MainFrame(String title) {
         super(title);
-        readFromFile();
 //----------------------------------------------------Driver Panel----------------------------------------------------
         JPanel driverPanel = new JPanel(new BorderLayout());
 
         //Table
         String[] driverColumns = {"Team", "Driver", "Location", "Points", "Races", "1st places", "2nd places",
                 "3rd places"};
-        JTable driverTable = new JTable(loadDataDriverTable(driversList), driverColumns);
-        refreshDriverTable(driverTable, driverColumns);
-        driverTable.setDefaultEditor(Object.class, null);
+        JTable driverTable = new JTable();
+        try{
+            readFromFile();
+            refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
+        }catch (Exception ex){
+            System.out.println(ex);
+            String[][] nullArray = new String[1][8];
+            TableModel nullModel = new DefaultTableModel(nullArray, driverColumns);
+            driverTable.setModel(nullModel);
+        }
 
-        JTableHeader driverTblHeader = driverTable.getTableHeader();
-        driverTblHeader.setBackground(Color.gray);
-        driverTblHeader.setForeground(Color.white);
-        driverTblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
         JScrollPane driverScrollPane = new JScrollPane(driverTable);
-        driverTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
         //Buttons
         JButton descendingBtn = new JButton("Sort by Points (Descending)");
@@ -40,14 +42,9 @@ class MainFrame extends JFrame implements ChampionshipManager {
         descendingBtn.setFocusPainted(false);
         descendingBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                refreshDriverTable(driverTable, driverColumns);
-                driverTable.setAutoCreateRowSorter(true);
-                // DefaultRowSorter has the sort() method
-                DefaultRowSorter sorter = ((DefaultRowSorter) driverTable.getRowSorter());
-                ArrayList list = new ArrayList();
-                list.add(new RowSorter.SortKey(3, SortOrder.DESCENDING));
-                sorter.setSortKeys(list);
-                sorter.sort();
+                ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
+                newArrayList.sort(new PointsComparator());
+                refreshTable(driverTable, loadDataDriverTable(newArrayList), driverColumns);
             }
         });
 
@@ -56,14 +53,10 @@ class MainFrame extends JFrame implements ChampionshipManager {
         ascendingBtn.setFocusPainted(false);
         ascendingBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                refreshDriverTable(driverTable, driverColumns);
-                driverTable.setAutoCreateRowSorter(true);
-                // DefaultRowSorter has the sort() method
-                DefaultRowSorter sorter = ((DefaultRowSorter) driverTable.getRowSorter());
-                ArrayList list = new ArrayList();
-                list.add(new RowSorter.SortKey(3, SortOrder.ASCENDING));
-                sorter.setSortKeys(list);
-                sorter.sort();
+                ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
+                newArrayList.sort(new PointsComparator());
+                Collections.reverse(newArrayList);
+                refreshTable(driverTable, loadDataDriverTable(newArrayList), driverColumns);
             }
         });
 
@@ -72,7 +65,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
         positionBtn.setFocusPainted(false);
         positionBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                refreshDriverTable(driverTable, driverColumns);
+                refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
                 driverTable.setAutoCreateRowSorter(true);
                 // DefaultRowSorter has the sort() method
                 DefaultRowSorter sorter = ((DefaultRowSorter) driverTable.getRowSorter());
@@ -97,34 +90,35 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         // Races Table
         String raceColumns[] = {"Date", "#1 Place", "#2 Place", "#3 Place"};
-        JTable raceTable = new JTable(loadDataRaceTable(racesList), raceColumns);
-        raceTable.setDefaultEditor(Object.class, null);
-        JTableHeader raceTblHeader = raceTable.getTableHeader();
-        raceTblHeader.setBackground(Color.gray);
-        raceTblHeader.setForeground(Color.white);
-        raceTblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
+        JTable raceTable = new JTable();
+        try{
+            refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
+        }catch (Exception ex){
+            System.out.println(ex);
+            String[][] nullArray = new String[1][4];
+            TableModel nullModel = new DefaultTableModel(nullArray, raceColumns);
+            raceTable.setModel(nullModel);
+        }
 
         JScrollPane raceScrollPane = new JScrollPane(raceTable);
-        raceTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
 
         //Race Detail Table
         String raceDetailColumns[] = {"Start Position", "Driver Name", "#Place"};
-        JTable raceDetailTable = new JTable(racesList.get(0).displayStartPositions(), raceDetailColumns);
-        raceDetailTable.setDefaultEditor(Object.class, null);
-        JTableHeader raceDtlTblHeader = raceDetailTable.getTableHeader();
-        raceDtlTblHeader.setBackground(Color.gray);
-        raceDtlTblHeader.setForeground(Color.white);
-        raceDtlTblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
-
+        JTable raceDetailTable = new JTable();
+        try{
+            refreshTable(raceDetailTable, racesList.get(0).displayStartPositions(), raceDetailColumns);
+        }catch (Exception ex){
+            System.out.println(ex);
+            String[][] nullArray = {{" "," "," "}};
+            refreshTable(raceDetailTable, nullArray, raceDetailColumns);
+        }
         JScrollPane raceDtlScrollPane = new JScrollPane(raceDetailTable);
-        raceDetailTable.setAutoResizeMode(JTable.AUTO_RESIZE_NEXT_COLUMN);
         raceTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     JTable target = (JTable)e.getSource();
                     int row = target.getSelectedRow();
-                    TableModel raceDtlTableModel = new DefaultTableModel(racesList.get(row).displayStartPositions(), raceDetailColumns);
-                    raceDetailTable.setModel(raceDtlTableModel);
+                    refreshTable(raceDetailTable, racesList.get(row).displayStartPositions(), raceDetailColumns);
                 }
             }
         });
@@ -135,10 +129,8 @@ class MainFrame extends JFrame implements ChampionshipManager {
         randomRaceBtn.setFocusPainted(false);
         randomRaceBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                refreshDriverTable(driverTable, driverColumns);
                 addNewRace(driversList, driversList);
-                TableModel raceTableModel = new DefaultTableModel(loadDataRaceTable(racesList), raceColumns);
-                raceTable.setModel(raceTableModel);
+                refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
             }
         });
 
@@ -193,9 +185,8 @@ class MainFrame extends JFrame implements ChampionshipManager {
                 Race shuffledRace = new Race(finalPlacesArray, beforeShuffle);
                 racesList.add(shuffledRace);
 
-                refreshDriverTable(driverTable, driverColumns);
-                TableModel raceTableModel = new DefaultTableModel(loadDataRaceTable(racesList), raceColumns);
-                raceTable.setModel(raceTableModel);
+                refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
+                refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
             }
         });
 
@@ -226,18 +217,10 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         //Search Detail Table
         String searchDetailColumns[] = {"Race Date", "Driver", "Start Position", "# Place"};
-
-        String[][] nullArray = {{" "," "," "," "},{" "," "," "," "},{" "," "," "," "}};
-
-        JTable searchDetailTable = new JTable(nullArray, searchDetailColumns);
-        searchDetailTable.setDefaultEditor(Object.class, null);
-        JTableHeader searchDtlTblHeader = searchDetailTable.getTableHeader();
-        searchDtlTblHeader.setBackground(Color.gray);
-        searchDtlTblHeader.setForeground(Color.white);
-        searchDtlTblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
-
+        String[][] nullArray = new String[1][4];
+        JTable searchDetailTable = new JTable();
+        refreshTable(searchDetailTable, nullArray, searchDetailColumns);
         JScrollPane searchDtlScrollPane = new JScrollPane(searchDetailTable);
-        searchDetailTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 
         JButton searchBtn = new JButton("Search");
         searchBtn.addActionListener(new ActionListener() {
@@ -262,8 +245,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
                         JOptionPane.showMessageDialog(searchPanel, "No driver was found!");
                     }
                     else {
-                        TableModel searchTableModel = new DefaultTableModel(searchDetails, searchDetailColumns);
-                        searchDetailTable.setModel(searchTableModel);
+                        refreshTable(searchDetailTable, searchDetails, searchDetailColumns);
                     }
                 }
                 catch (Exception ex){
@@ -290,29 +272,22 @@ class MainFrame extends JFrame implements ChampionshipManager {
         racePanel.add(searchParentPnl,BorderLayout.CENTER);
         racePanel.add(raceButtons, BorderLayout.SOUTH);
 
-//----------------------------------------------------About me Panel----------------------------------------------------
-        //Create panel 3
-        JPanel p3 = new JPanel();
-
-
 //----------------------------------------------------Frame properties--------------------------------------------------
         //Create the tab container
         JTabbedPane tabs = new JTabbedPane();
         //Set tab container position
         tabs.setBounds(5, 15, 1257, 665);
+
         //Associate each panel with the corresponding tab
         tabs.add("Driver Details", driverPanel);
         tabs.add("Race Details", racePanel);
-        tabs.add("About Me", p3);
-//        this.setDefaultLookAndFeelDecorated(true);
 
         //Add tabs to the frame
         this.add(tabs, BorderLayout.CENTER);
-
+        this.setDefaultLookAndFeelDecorated(true);
         this.setSize(1280, 720);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
-//        this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout());
         this.setVisible(true);
@@ -341,20 +316,29 @@ class MainFrame extends JFrame implements ChampionshipManager {
         return raceData;
     }
 
-    private void refreshDriverTable(JTable tableName, String[] columns) {
+    private void refreshTable(JTable tableName, Object[][] tableData, String[] columns) {
         // By default, the all the values are stored as objects so when we sort columns it gets sorted as string
         // By overriding the original tableModel we can change values at specific columns into int, so they
         // are sorted as needed
-        TableModel driverTableModel = new DefaultTableModel(loadDataDriverTable(driversList), columns) {
+        TableModel driverTableModel = new DefaultTableModel(tableData, columns) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 // The index of the column that need to be class changed
-                if (columnIndex == 3 || columnIndex == 4 || columnIndex == 5 || columnIndex == 6 || columnIndex == 7)
-                    return Integer.class;
+                for(int count = 0; count > tableData.length; count++){
+                    if (columnIndex == count) return Integer.class;
+                }
                 return super.getColumnClass(columnIndex);
             }
         };
+
+        //Table styling
         tableName.setModel(driverTableModel);
+        tableName.setDefaultEditor(Object.class, null);
+        JTableHeader tblHeader = tableName.getTableHeader();
+        tblHeader.setBackground(Color.DARK_GRAY);
+        tblHeader.setForeground(Color.white);
+        tblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
+        tableName.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
     }
 
     @Override
@@ -380,9 +364,3 @@ class MainFrame extends JFrame implements ChampionshipManager {
     }
 }
 
-public class GUI_Interface{
-    public static void main(String[] args) {
-        MainFrame mainWindow = new MainFrame("Formula 1 Championship Manager");
-        mainWindow.setVisible( true );
-    }
-}

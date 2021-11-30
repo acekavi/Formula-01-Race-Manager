@@ -13,7 +13,7 @@ public class FileHandler {
             // Saves the arraylist in bytecode using Serializers
             objectOut.writeObject(toWriteObject);
             objectOut.close();
-            System.out.println("File has been saved successfully!");
+//            System.out.println("File has been saved successfully!");
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -27,7 +27,7 @@ public class FileHandler {
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);
             ArrayList obj = (ArrayList)objectIn.readObject();
-            System.out.println("File has been read successfully!");
+//            System.out.println("File has been read successfully!");
             objectIn.close();
             return obj;
 
