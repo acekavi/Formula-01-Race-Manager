@@ -32,7 +32,7 @@ public class FileHandler {
             return obj;
 
         } catch (Exception ex) {
-            System.out.println("File is empty or unavailable!");
+//            System.out.println("File is empty or unavailable!");
             return new ArrayList();
         }
     }

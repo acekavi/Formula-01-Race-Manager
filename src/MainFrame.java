@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.text.Normalizer;
 import java.util.*;
 
 class MainFrame extends JFrame implements ChampionshipManager {
@@ -24,15 +23,25 @@ class MainFrame extends JFrame implements ChampionshipManager {
         String[] driverColumns = {"Team", "Driver", "Location", "Points", "Races", "1st places", "2nd places",
                 "3rd places"};
         JTable driverTable = new JTable();
-        try{
-            readFromFile();
-            refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
-        }catch (Exception ex){
-            System.out.println(ex);
-            String[][] nullArray = new String[1][8];
-            TableModel nullModel = new DefaultTableModel(nullArray, driverColumns);
-            driverTable.setModel(nullModel);
+        readFromFile();
+        //Adding sample drivers to test the program if no drivers available in the savefile
+        if(driversList.isEmpty()){
+            driversList.add(new Formula1Driver("Lorem", "Lorem", new Car("Lorem")));
+            driversList.add(new Formula1Driver("Ipsum", "Ipsum", new Car("Ipsum")));
+            driversList.add(new Formula1Driver("Dolor", "Dolor", new Car("Dolor")));
+            driversList.add(new Formula1Driver("Sit", "Sit", new Car("Sit")));
+            driversList.add(new Formula1Driver("Amet", "Amet", new Car("Amet")));
+            driversList.add(new Formula1Driver("Consectetur", "Consectetur", new Car("Consectetur")));
+            driversList.add(new Formula1Driver("Elit", "Elit", new Car("Elit")));
+            driversList.add(new Formula1Driver("Sed", "Sed", new Car("Sed")));
+            driversList.add(new Formula1Driver("Tempor", "Tempor", new Car("Tempor")));
+            driversList.add(new Formula1Driver("Aliqua", "Aliqua", new Car("Aliqua")));
         }
+        if(racesList.isEmpty()){
+            Race emptyRace = new Race(driversList, driversList);
+            racesList.add(emptyRace);
+        }
+        refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
 
         JScrollPane driverScrollPane = new JScrollPane(driverTable);
 
@@ -91,27 +100,13 @@ class MainFrame extends JFrame implements ChampionshipManager {
         // Races Table
         String raceColumns[] = {"Date", "#1 Place", "#2 Place", "#3 Place"};
         JTable raceTable = new JTable();
-        try{
-            refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
-        }catch (Exception ex){
-            System.out.println(ex);
-            String[][] nullArray = new String[1][4];
-            TableModel nullModel = new DefaultTableModel(nullArray, raceColumns);
-            raceTable.setModel(nullModel);
-        }
-
+        refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
         JScrollPane raceScrollPane = new JScrollPane(raceTable);
 
         //Race Detail Table
         String raceDetailColumns[] = {"Start Position", "Driver Name", "#Place"};
         JTable raceDetailTable = new JTable();
-        try{
-            refreshTable(raceDetailTable, racesList.get(0).displayStartPositions(), raceDetailColumns);
-        }catch (Exception ex){
-            System.out.println(ex);
-            String[][] nullArray = {{" "," "," "}};
-            refreshTable(raceDetailTable, nullArray, raceDetailColumns);
-        }
+        refreshTable(raceDetailTable, racesList.get(0).displayStartPositions(), raceDetailColumns);
         JScrollPane raceDtlScrollPane = new JScrollPane(raceDetailTable);
         raceTable.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
@@ -217,7 +212,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         //Search Detail Table
         String searchDetailColumns[] = {"Race Date", "Driver", "Start Position", "# Place"};
-        String[][] nullArray = new String[1][4];
+        String[][] nullArray = new String[0][4];
         JTable searchDetailTable = new JTable();
         refreshTable(searchDetailTable, nullArray, searchDetailColumns);
         JScrollPane searchDtlScrollPane = new JScrollPane(searchDetailTable);
@@ -284,7 +279,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
 
         //Add tabs to the frame
         this.add(tabs, BorderLayout.CENTER);
-        this.setDefaultLookAndFeelDecorated(true);
+        setDefaultLookAndFeelDecorated(true);
         this.setSize(1280, 720);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
