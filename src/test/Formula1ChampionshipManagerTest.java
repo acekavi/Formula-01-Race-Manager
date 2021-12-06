@@ -1,30 +1,32 @@
 package test;
 
+import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class Formula1ChampionshipManagerTest {
 
-    @org.junit.jupiter.api.Test
+    @Test
     void menu() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void readFromFile() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void viewDriver() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void displayAllDrivers() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void addNewRace() {
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void viewRace() {
     }
 }

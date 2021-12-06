@@ -5,10 +5,10 @@ import java.time.format.DateTimeFormatter;
 
 public class Race implements Serializable {
 
-    private String raceDate;
+    private final String raceDate;
 
-    private ArrayList<Formula1Driver> driversInRace;
-    private ArrayList<Formula1Driver> startingPositions;
+    private final ArrayList<Formula1Driver> driversInRace;
+    private final ArrayList<Formula1Driver> startingPositions;
 
     public Race( ArrayList<Formula1Driver> driversInRace, ArrayList<Formula1Driver> startingPositions) {
         LocalDateTime now = LocalDateTime.now();
@@ -40,7 +40,7 @@ public class Race implements Serializable {
         StringBuilder driverDetails = new StringBuilder();
         int count = 1;
         for (Formula1Driver thisDriver:driversInRace) {
-            //Append a string like "#1 - Avishka; "
+            //Append a string like "#1 - Max; "
             driverDetails.append("#").append(count).append(" - ").append(thisDriver.getName()).append("; ");
             count++;
         }
@@ -69,10 +69,11 @@ public class Race implements Serializable {
     }
 
     public Boolean searchDriver(String driverName) {
-        Boolean driverExists = false;
+        boolean driverExists = false;
         for (Formula1Driver thisDriver:driversInRace){
-            if (thisDriver.getName().equalsIgnoreCase(driverName)){
+            if (thisDriver.getName().equalsIgnoreCase(driverName)) {
                 driverExists = true;
+                break;
             }
         }
         return driverExists;

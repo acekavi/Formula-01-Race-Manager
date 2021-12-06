@@ -18,12 +18,12 @@ class MainFrame extends JFrame implements ChampionshipManager {
         super(title);
 //----------------------------------------------------Driver Panel----------------------------------------------------
         JPanel driverPanel = new JPanel(new BorderLayout());
+        readFromFile();
 
         //Table
         String[] driverColumns = {"Team", "Driver", "Location", "Points", "Races", "1st places", "2nd places",
                 "3rd places"};
         JTable driverTable = new JTable();
-        readFromFile();
         //Adding sample drivers to test the program if no drivers available in the savefile
         if(driversList.isEmpty()){
             driversList.add(new Formula1Driver("Lorem", "Lorem", new Car("Lorem")));
@@ -49,40 +49,34 @@ class MainFrame extends JFrame implements ChampionshipManager {
         JButton descendingBtn = new JButton("Sort by Points (Descending)");
         descendingBtn.setToolTipText("Sort the table using points in descending order");
         descendingBtn.setFocusPainted(false);
-        descendingBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
-                newArrayList.sort(new PointsComparator());
-                refreshTable(driverTable, loadDataDriverTable(newArrayList), driverColumns);
-            }
+        descendingBtn.addActionListener(e -> {
+            ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
+            newArrayList.sort(new PointsComparator());
+            refreshTable(driverTable, loadDataDriverTable(newArrayList), driverColumns);
         });
 
         JButton ascendingBtn = new JButton("Sort by Points (Ascending)");
         ascendingBtn.setToolTipText("Sort the table using points in ascending order");
         ascendingBtn.setFocusPainted(false);
-        ascendingBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
-                newArrayList.sort(new PointsComparator());
-                Collections.reverse(newArrayList);
-                refreshTable(driverTable, loadDataDriverTable(newArrayList), driverColumns);
-            }
+        ascendingBtn.addActionListener(e -> {
+            ArrayList<Formula1Driver> newArrayList = new ArrayList<>(driversList);
+            newArrayList.sort(new PointsComparator());
+            Collections.reverse(newArrayList);
+            refreshTable(driverTable, loadDataDriverTable(newArrayList), driverColumns);
         });
 
         JButton positionBtn = new JButton("Sort by First Places");
         positionBtn.setToolTipText("Sort the table using first places in descending order");
         positionBtn.setFocusPainted(false);
-        positionBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
-                driverTable.setAutoCreateRowSorter(true);
-                // DefaultRowSorter has the sort() method
-                DefaultRowSorter sorter = ((DefaultRowSorter) driverTable.getRowSorter());
-                ArrayList list = new ArrayList();
-                list.add(new RowSorter.SortKey(5, SortOrder.DESCENDING));
-                sorter.setSortKeys(list);
-                sorter.sort();
-            }
+        positionBtn.addActionListener(e -> {
+            refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
+            driverTable.setAutoCreateRowSorter(true);
+            // DefaultRowSorter has the sort() method
+            DefaultRowSorter sorter = ((DefaultRowSorter) driverTable.getRowSorter());
+            ArrayList list = new ArrayList();
+            list.add(new RowSorter.SortKey(5, SortOrder.DESCENDING));
+            sorter.setSortKeys(list);
+            sorter.sort();
         });
 
         JPanel driverButtons = new JPanel();
@@ -98,13 +92,13 @@ class MainFrame extends JFrame implements ChampionshipManager {
         JPanel racePanel = new JPanel(new BorderLayout());
 
         // Races Table
-        String raceColumns[] = {"Date", "#1 Place", "#2 Place", "#3 Place"};
+        String[] raceColumns = {"Date", "#1 Place", "#2 Place", "#3 Place"};
         JTable raceTable = new JTable();
         refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
         JScrollPane raceScrollPane = new JScrollPane(raceTable);
 
         //Race Detail Table
-        String raceDetailColumns[] = {"Start Position", "Driver Name", "#Place"};
+        String[] raceDetailColumns = {"Start Position", "Driver Name", "#Place"};
         JTable raceDetailTable = new JTable();
         refreshTable(raceDetailTable, racesList.get(0).displayStartPositions(), raceDetailColumns);
         JScrollPane raceDtlScrollPane = new JScrollPane(raceDetailTable);
@@ -122,82 +116,82 @@ class MainFrame extends JFrame implements ChampionshipManager {
         JButton randomRaceBtn = new JButton("Add new race");
         randomRaceBtn.setToolTipText("New random race will be added");
         randomRaceBtn.setFocusPainted(false);
-        randomRaceBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                addNewRace(driversList, driversList);
-                refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
-            }
+        randomRaceBtn.addActionListener(e -> {
+            addNewRace(driversList, driversList);
+            refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
+
+            saveToFile();
+            readFromFile();
         });
 
         JButton randomProbRaceBtn = new JButton("Add new probability race");
         randomProbRaceBtn.setToolTipText("New random race according to probabilities will be added");
         randomProbRaceBtn.setFocusPainted(false);
-        randomProbRaceBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                // Shuffles the existing array list to get random starting positions
-                ArrayList<Formula1Driver> startPositionsArray = new ArrayList<>(driversList);
-                Collections.shuffle(startPositionsArray);
+        randomProbRaceBtn.addActionListener(e -> {
+            // Shuffles the existing array list to get random starting positions
+            ArrayList<Formula1Driver> startPositionsArray = new ArrayList<>(driversList);
+            Collections.shuffle(startPositionsArray);
 
-                ArrayList<Formula1Driver> probabilityArray = new ArrayList<>();
-                // 1st position player has 4/10 prob
-                probabilityArray.add(startPositionsArray.get(0));
-                probabilityArray.add(startPositionsArray.get(0));
-                probabilityArray.add(startPositionsArray.get(0));
-                probabilityArray.add(startPositionsArray.get(0));
+            ArrayList<Formula1Driver> probabilityArray = new ArrayList<>();
+            // 1st position player has 4/10 prob
+            probabilityArray.add(startPositionsArray.get(0));
+            probabilityArray.add(startPositionsArray.get(0));
+            probabilityArray.add(startPositionsArray.get(0));
+            probabilityArray.add(startPositionsArray.get(0));
 
-                // 2nd position player has 3/10 prob
-                probabilityArray.add(startPositionsArray.get(1));
-                probabilityArray.add(startPositionsArray.get(1));
-                probabilityArray.add(startPositionsArray.get(1));
+            // 2nd position player has 3/10 prob
+            probabilityArray.add(startPositionsArray.get(1));
+            probabilityArray.add(startPositionsArray.get(1));
+            probabilityArray.add(startPositionsArray.get(1));
 
-                // 3rd position player has 1/10 prob
-                probabilityArray.add(startPositionsArray.get(2));
+            // 3rd position player has 1/10 prob
+            probabilityArray.add(startPositionsArray.get(2));
 
-                // 4th position player has 1/10 prob
-                probabilityArray.add(startPositionsArray.get(3));
+            // 4th position player has 1/10 prob
+            probabilityArray.add(startPositionsArray.get(3));
 
-                //5th - 9th has 0.2/10 probability
-                Random randomInt = new Random();
-                int randomIndex = randomInt.nextInt(5);
-                // Adding a random player who is between 5th and 9th position
-                probabilityArray.add(startPositionsArray.get(randomIndex + 4));
+            //5th - 9th has 0.2/10 probability
+            Random randomInt = new Random();
+            int randomIndex = randomInt.nextInt(5);
+            // Adding a random player who is between 5th and 9th position
+            probabilityArray.add(startPositionsArray.get(randomIndex + 4));
 
-                // Shuffling the probability array to get the first position to random player with probabilities
-                Collections.shuffle(probabilityArray);
+            // Shuffling the probability array to get the first position to random player with probabilities
+            Collections.shuffle(probabilityArray);
 
-                // LinkedHashSet is used to avoid object duplication
-                Set<Formula1Driver> set = new LinkedHashSet<>();
-                // Setting the first place to position probability
-                set.add(probabilityArray.get(0));
+            // LinkedHashSet is used to avoid object duplication
+            Set<Formula1Driver> set = new LinkedHashSet<>();
+            // Setting the first place to position probability
+            set.add(probabilityArray.get(0));
 
-                //Cloning the array before shuffling it again to randomise other places
-                ArrayList<Formula1Driver> beforeShuffle = new ArrayList(startPositionsArray);
-                Collections.shuffle(startPositionsArray);
+            //Cloning the array before shuffling it again to randomise other places
+            ArrayList beforeShuffle = new ArrayList(startPositionsArray);
+            Collections.shuffle(startPositionsArray);
 
-                set.addAll(startPositionsArray);
-                ArrayList<Formula1Driver> finalPlacesArray = new ArrayList<>(set);
+            set.addAll(startPositionsArray);
+            ArrayList<Formula1Driver> finalPlacesArray = new ArrayList<>(set);
 
-                Race shuffledRace = new Race(finalPlacesArray, beforeShuffle);
-                racesList.add(shuffledRace);
+            Race shuffledRace = new Race(finalPlacesArray, beforeShuffle);
+            racesList.add(shuffledRace);
 
-                refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
-                refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
-            }
+            refreshTable(driverTable, loadDataDriverTable(driversList), driverColumns);
+            refreshTable(raceTable, loadDataRaceTable(racesList), raceColumns);
+
+            saveToFile();
+            readFromFile();
         });
 
         JButton raceSortBtn = new JButton("Sort by Race Date");
         raceSortBtn.setToolTipText("Sort the table using race date in ascending order");
         raceSortBtn.setFocusPainted(false);
-        raceSortBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                raceTable.setAutoCreateRowSorter(true);
-                // DefaultRowSorter has the sort() method
-                DefaultRowSorter sorter = ((DefaultRowSorter) raceTable.getRowSorter());
-                ArrayList list = new ArrayList();
-                list.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
-                sorter.setSortKeys(list);
-                sorter.sort();
-            }
+        raceSortBtn.addActionListener(e -> {
+            raceTable.setAutoCreateRowSorter(true);
+            // DefaultRowSorter has the sort() method
+            DefaultRowSorter sorter = ((DefaultRowSorter) raceTable.getRowSorter());
+            ArrayList list = new ArrayList();
+            list.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
+            sorter.setSortKeys(list);
+            sorter.sort();
         });
 
         JPanel raceButtons = new JPanel();
@@ -211,42 +205,40 @@ class MainFrame extends JFrame implements ChampionshipManager {
         JTextField driverSearchTxt = new JTextField(10);
 
         //Search Detail Table
-        String searchDetailColumns[] = {"Race Date", "Driver", "Start Position", "# Place"};
+        String[] searchDetailColumns = {"Race Date", "Driver", "Start Position", "# Place"};
         String[][] nullArray = new String[0][4];
         JTable searchDetailTable = new JTable();
         refreshTable(searchDetailTable, nullArray, searchDetailColumns);
         JScrollPane searchDtlScrollPane = new JScrollPane(searchDetailTable);
 
         JButton searchBtn = new JButton("Search");
-        searchBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try{
-                    String driverName = driverSearchTxt.getText();
+        searchBtn.addActionListener(e -> {
+            try{
+                String driverName = driverSearchTxt.getText();
 
-                    ArrayList<Race> searchArray = new ArrayList<>();
-                    for (Race thisRace: racesList){
-                        if(thisRace.searchDriver(driverName)){
-                            searchArray.add(thisRace);
-                        }
-                    }
-                    Object[][] searchDetails = new Object[searchArray.size()][4];
-                    int count = 0;
-                    for (Race thisRace : searchArray){
-                        searchDetails[count] = thisRace.driverRaceStats(driverName);
-                        count++;
-                    }
-
-                    if(searchArray.size()==0){
-                        JOptionPane.showMessageDialog(searchPanel, "No driver was found!");
-                    }
-                    else {
-                        refreshTable(searchDetailTable, searchDetails, searchDetailColumns);
+                ArrayList<Race> searchArray = new ArrayList<>();
+                for (Race thisRace: racesList){
+                    if(thisRace.searchDriver(driverName)){
+                        searchArray.add(thisRace);
                     }
                 }
-                catch (Exception ex){
-                    System.out.println(ex);
+                Object[][] searchDetails = new Object[searchArray.size()][4];
+                int count = 0;
+                for (Race thisRace : searchArray){
+                    searchDetails[count] = thisRace.driverRaceStats(driverName);
+                    count++;
+                }
+
+                if(searchArray.size()==0){
                     JOptionPane.showMessageDialog(searchPanel, "No driver was found!");
                 }
+                else {
+                    refreshTable(searchDetailTable, searchDetails, searchDetailColumns);
+                }
+            }
+            catch (Exception ex){
+                System.out.println(ex);
+                JOptionPane.showMessageDialog(searchPanel, "No driver was found!");
             }
         });
 
@@ -319,9 +311,6 @@ class MainFrame extends JFrame implements ChampionshipManager {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 // The index of the column that need to be class changed
-                for(int count = 0; count > tableData.length; count++){
-                    if (columnIndex == count) return Integer.class;
-                }
                 return super.getColumnClass(columnIndex);
             }
         };
@@ -334,6 +323,18 @@ class MainFrame extends JFrame implements ChampionshipManager {
         tblHeader.setForeground(Color.white);
         tblHeader.setFont(new Font("Helvetica Neue", Font.BOLD, 14));
         tableName.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+    }
+
+    private void saveToFile() {
+        String driverDataPath = new File("src/data/driverData.ser").getAbsolutePath();
+        String raceDataPath = new File("src/data/raceData.ser").getAbsolutePath();
+        FileHandler saveHandler = new FileHandler();
+
+        //Saves driver related data to the driver save file
+        saveHandler.writeObjectToFile(driverDataPath, driversList);
+
+        //Saves race related data to the race save file
+        saveHandler.writeObjectToFile(raceDataPath, racesList);
     }
 
     @Override
@@ -358,4 +359,3 @@ class MainFrame extends JFrame implements ChampionshipManager {
         racesList.add(shuffledRace);
     }
 }
-
