@@ -2,13 +2,12 @@ import javax.swing.*;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 class SplashScreen extends JFrame {
     static JProgressBar progressBar = new JProgressBar();
     static int count = 1, TIMER_PAUSE = 25, PROGBAR_MAX = 100;
     static Timer progressBarTimer;
-    private JLabel imglabel;
-    private ImageIcon img;
     ActionListener al = new ActionListener() {
         @Override
         public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -35,8 +34,8 @@ class SplashScreen extends JFrame {
         labelName.setFont(new Font("Arial", Font.BOLD, 15));
         labelName.setForeground(Color.WHITE);
         panel.add(labelName);
-        img = new ImageIcon(getClass().getResource("logo.png"));
-        imglabel = new JLabel(img);
+        ImageIcon img = new ImageIcon(Objects.requireNonNull(getClass().getResource("logo.png")));
+        JLabel imglabel = new JLabel(img);
         panel.add(imglabel);
         imglabel.setBounds(0, 0, 500, 300);
         panel.setLayout(null);

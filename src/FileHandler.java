@@ -22,7 +22,6 @@ public class FileHandler {
 
     public ArrayList readObjectFile(String filepath) {
         try {
-
             // Reads the bytecode in the file to an arraylist and returns it
             FileInputStream fileIn = new FileInputStream(filepath);
             ObjectInputStream objectIn = new ObjectInputStream(fileIn);

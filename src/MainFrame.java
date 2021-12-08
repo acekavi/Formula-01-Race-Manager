@@ -3,8 +3,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -73,7 +71,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
             driverTable.setAutoCreateRowSorter(true);
             // DefaultRowSorter has the sort() method
             DefaultRowSorter sorter = ((DefaultRowSorter) driverTable.getRowSorter());
-            ArrayList list = new ArrayList();
+            ArrayList<RowSorter.SortKey> list = new ArrayList<>();
             list.add(new RowSorter.SortKey(5, SortOrder.DESCENDING));
             sorter.setSortKeys(list);
             sorter.sort();
@@ -165,7 +163,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
             set.add(probabilityArray.get(0));
 
             //Cloning the array before shuffling it again to randomise other places
-            ArrayList beforeShuffle = new ArrayList(startPositionsArray);
+            ArrayList<Formula1Driver> beforeShuffle = new ArrayList<>(startPositionsArray);
             Collections.shuffle(startPositionsArray);
 
             set.addAll(startPositionsArray);
@@ -188,7 +186,7 @@ class MainFrame extends JFrame implements ChampionshipManager {
             raceTable.setAutoCreateRowSorter(true);
             // DefaultRowSorter has the sort() method
             DefaultRowSorter sorter = ((DefaultRowSorter) raceTable.getRowSorter());
-            ArrayList list = new ArrayList();
+            ArrayList<RowSorter.SortKey> list = new ArrayList<>();
             list.add(new RowSorter.SortKey(0, SortOrder.ASCENDING));
             sorter.setSortKeys(list);
             sorter.sort();
